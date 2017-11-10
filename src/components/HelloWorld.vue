@@ -13,7 +13,6 @@
           <el-form-item label="支付渠道">
             <el-select v-model="form.channel" placeholder="请选择活动区域">
               <el-option label="支付宝" value="alipay_pc_direct"></el-option>
-              <el-option label="微信支付公众号" value="wx_pub"></el-option>
               <el-option label="微信支付公号扫码" value="wx_pub_qr"></el-option>
               <el-option label="银联" value="upacp_pc"></el-option>
             </el-select>
@@ -28,9 +27,11 @@
           <el-form-item v-show="qr.isShow">
             <qrcode :value="qr.url" :options="{ size: 200 }"></qrcode>
           </el-form-item>
+          <el-form-item v-html="html"></el-form-item>
         </el-form>
       </el-col>
-      <el-col :xs="4" :sm="6" :md="8" :lg="9" :xl="11"></el-col>
+      <el-col :xs=" 4
+          " :sm="6" :md="8" :lg="9" :xl="11"></el-col>
       <el-col :xs="8" :sm="6" :md="4" :lg="3" :xl="1"></el-col>
     </el-row>
 
@@ -48,13 +49,14 @@
         form: {
           name: '支付测试商品',
           channel: '',
-          amount: 500,
+          amount: 0.1,
           desc: '商品描述信息测试'
         },
         qr: {
           url: '',
           isShow: false
-        }
+        },
+        html: "<h1>这是一个支付宝页面</h1>",
       }
     },
     components: {
@@ -62,15 +64,13 @@
     },
     methods: {
       onSubmit() {
-        let alipay_pc_directCharge = 'http://localhost:49851/Api/Charge/alipay_pc_directCharge';
-        let upacp_pcCharge = 'http://localhost:49851/Api/Charge/upacp_pcCharge';
-        let wx_pubCharge = 'http://localhost:49851/Api/Charge/wx_pubCharge';
-        let wx_pub_qrCharge = 'http://localhost:49851/Api/Charge/wx_pub_qrCharge';
+        let alipay_pc_directCharge = 'http://localhost:49851/Api/Payment/alipay_pc_directCharge';
+        let upacp_pcCharge = 'http://localhost:49851/Api/Payment/upacp_pcCharge';
+        let wx_pub_qrCharge = 'http://localhost:49851/Api//Payment/wx_pub_qrCharge';
 
         let requestUrl = '';
         if (this.form.channel === 'alipay_pc_direct') requestUrl = alipay_pc_directCharge;
         if (this.form.channel === 'upacp_pc') requestUrl = upacp_pcCharge;
-        if (this.form.channel === 'wx_pub') requestUrl = wx_pubCharge;
         if (this.form.channel === 'wx_pub_qr') requestUrl = wx_pub_qrCharge;
 
         let params = {
@@ -84,7 +84,16 @@
           {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
           .then((res) => {
             let data = res.data.RESULT;
-            if (this.form.channel !== 'wx_pub_qr') {
+            if (this.form.channel === "alipay_pc_direct") {
+              this.html = res.data.Body;
+              document.forms.alipaysubmit.submit();
+            }
+            else if (this.form.channel === 'wx_pub_qr') {
+              this.qr.url = data.wx_pub_qr;
+              this.qr.isShow = true;
+              console.log(data.wx_pub_qr)
+            }
+            else {
               pingpp.createPayment(data, (result, err) => {
                 console.log(result);
                 console.log(err.msg);
@@ -97,11 +106,6 @@
                   // 微信公众账号支付取消支付
                 }
               });
-            }
-            else {
-              this.qr.url = data.wx_pub_qr;
-              this.qr.isShow = true;
-              console.log(data.wx_pub_qr)
             }
           })
       },
