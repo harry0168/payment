@@ -14,7 +14,8 @@
             <el-select v-model="form.channel" placeholder="请选择活动区域">
               <el-option label="支付宝" value="alipay_pc_direct"></el-option>
               <el-option label="微信支付公号扫码" value="wx_pub_qr"></el-option>
-              <el-option label="银联" value="upacp_pc"></el-option>
+              <el-option label="银联PC" value="upacp_pc"></el-option>
+              <el-option label="银联WAP" value="upacp_wap"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="备注信息">
@@ -65,13 +66,15 @@
     methods: {
       onSubmit() {
         let alipay_pc_directCharge = 'http://localhost:49851/Api/Payment/alipay_pc_directCharge';
-        let upacp_pcCharge = 'http://localhost:49851/Api/Payment/upacp_pcCharge';
-        let wx_pub_qrCharge = 'http://localhost:49851/Api//Payment/wx_pub_qrCharge';
+        let charge_wx_pub_qr = 'http://localhost:49851/Api//Payment/Charge_wx_pub_qr';
+        let charge_upacp_pc = 'http://localhost:49851/Api/Payment/Charge_upacp_pc';
+        let charge_upacp_wap = 'http://localhost:49851/Api//Payment/Charge_upacp_wap';
 
         let requestUrl = '';
         if (this.form.channel === 'alipay_pc_direct') requestUrl = alipay_pc_directCharge;
-        if (this.form.channel === 'upacp_pc') requestUrl = upacp_pcCharge;
-        if (this.form.channel === 'wx_pub_qr') requestUrl = wx_pub_qrCharge;
+        if (this.form.channel === 'upacp_pc') requestUrl = charge_upacp_pc;
+        if (this.form.channel === 'upacp_wap') requestUrl = charge_upacp_wap;
+        if (this.form.channel === 'wx_pub_qr') requestUrl = charge_wx_pub_qr;
 
         let params = {
           BUSINESS_PARAMETERS: {
